@@ -9,7 +9,7 @@ namespace Example.Models
 {
     public class Item
     {
-        //primary[Key]
+        [Key]
         public int Id { get; set;}
 
         [Required]
