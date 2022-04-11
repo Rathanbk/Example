@@ -10,17 +10,21 @@ namespace Example.Controllers
     public class ExpenseController : Controller
     {
         private readonly ApplicationDbContext _db;
+
         private readonly ILogger<ExpenseController> _logger;
 
-        public ExpenseController(ApplicationDbContext db, ILogger<ExpenseController> logger)
+        public ExpenseController(
+            ApplicationDbContext db,
+            ILogger<ExpenseController> logger
+        )
         {
             _db = db;
-            _logger=logger;
+            _logger = logger;
         }
 
         public IActionResult Index()
         {
-           _logger.LogInformation("Requested the Index Page"); 
+            _logger.LogInformation("Requested the Index Page");
             IEnumerable<Expense> objList = _db.Expenses;
             return View(objList);
         }
@@ -28,7 +32,7 @@ namespace Example.Controllers
         //GET-Create
         public IActionResult Create()
         {
-              _logger.LogInformation("Requested the Create New Page");
+            _logger.LogInformation("Requested the Create New Page");
             return View();
         }
 
@@ -36,14 +40,20 @@ namespace Example.Controllers
         [HttpPost]
         public IActionResult Create(Expense obj)
         {
-            
-            if (ModelState.IsValid)
+            try
             {
-                _db.Expenses.Add (obj);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    _db.Expenses.Add (obj);
+                    _db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                return View(obj);
             }
-            return View(obj);
+            catch (System.Exception ex)
+            {
+                Console.WriteLine (ex);
+            }
         }
 
         //GET-Delete
@@ -70,10 +80,11 @@ namespace Example.Controllers
             {
                 return NotFound();
             }
-            _db.Expenses.Remove(obj);
+            _db.Expenses.Remove (obj);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
+
         //GET Update
         public IActionResult Update(int? id)
         {
@@ -88,19 +99,18 @@ namespace Example.Controllers
             }
             return View(obj);
         }
+
         //POST- Update
         [HttpPost]
         public IActionResult Update(Expense obj)
         {
             if (ModelState.IsValid)
             {
-                _db.Expenses.Update(obj);
+                _db.Expenses.Update (obj);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(obj);
         }
-
-
     }
 }
